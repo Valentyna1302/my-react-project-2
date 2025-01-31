@@ -9,6 +9,7 @@ const App = () => {
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     // axios
@@ -18,9 +19,10 @@ const App = () => {
     const getData = async () => {
       try {
         setIsLoading(true);
+        setIsError(false);
         // const data = await fetchArticles();
         // setArticles(data.hits);
-        const { hits } = await fetchArticles(); // або так
+        const { hits } = await fetchArticles(query); // або так
         setArticles(hits);
       } catch (error) {
         setIsError(true);
@@ -31,17 +33,13 @@ const App = () => {
     getData();
   }, []);
 
+  const handleSetQuery = (newQuery) => console.log(newQuery);
+  setQuery(newQuery);
+
   return (
     <div>
-      <ul>
-        {articles.map((item) => (
-          <li key={item.objectID}>
-            <a target="_blank" href={item.url}>
-              {item.title}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <SearchForm handleSetQuery={handleSetQuery} />
+      <ArticleList articles={articles} />
       {isLoading && <p>Loading...</p>}
       {isError && <p>Something went wrong!</p>}
     </div>
