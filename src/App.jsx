@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import ArticleList from "./components/ArticleList/ArticleList";
-import { MutatingDots } from "react-loader-spinner";
+// import { MutatingDots } from "react-loader-spinner";
 import { fetchArticles, fetchArticlesWithTopic } from "./articles-api";
 import { SearchForm } from "./components/SearchForm/SearchForm";
-import axios from "axios";
 
 const App = () => {
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     // axios
@@ -22,26 +22,31 @@ const App = () => {
         setIsError(false);
         // const data = await fetchArticles();
         // setArticles(data.hits);
-        const { hits } = await fetchArticles(query); // або так
-        setArticles(hits);
-      } catch (error) {
+        const { hits } = await fetchArticles(query, page); // або так
+        setArticles((prev) => [...prev, ...hits]);
+      } catch {
         setIsError(true);
       } finally {
         setIsLoading(false);
       }
     };
     getData();
-  }, []);
+  }, [query, page]);
 
-  const handleSetQuery = (newQuery) => console.log(newQuery);
-  setQuery(newQuery);
+  const handleSetQuery = (newQuery) => {
+    console.log(newQuery);
+    setQuery(newQuery);
+    setArticles([]);
+    setPage(0);
+  };
 
   return (
     <div>
-      <SearchForm handleSetQuery={handleSetQuery} />
+      <SearchForm onSubmit={handleSetQuery} />
       <ArticleList articles={articles} />
       {isLoading && <p>Loading...</p>}
       {isError && <p>Something went wrong!</p>}
+      <button onClick={() => setPage((prev) => prev + 1)}>Load more</button>
     </div>
   );
 };

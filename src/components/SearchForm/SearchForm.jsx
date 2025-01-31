@@ -25,12 +25,12 @@ import { useState } from "react";
 //   );
 // };
 
-export const SearchForm = ({ handleSetQuery }) => {
+export const SearchForm = ({ onSubmit }) => {
   const [value, setValue] = useState("");
   const handleSubmit = (evt) => {
     evt.preventDefault();
 
-    handleSetQuery(value);
+    onSubmit(value);
   };
 
   return (
